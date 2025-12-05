@@ -1,0 +1,78 @@
+import 'package:e_commerce_app/core/utils/app_styless.dart';
+import 'package:e_commerce_app/core/utils/media_query_values.dart';
+import 'package:flutter/material.dart';
+
+class StaticButton extends StatefulWidget {
+  const StaticButton({
+    super.key,
+    this.onTap,
+    required this.text,
+    this.buttonColor,
+    this.style,
+    this.margin,
+  });
+
+  final Function()? onTap;
+  final String text;
+  final Color? buttonColor;
+  final TextStyle? style;
+  final EdgeInsetsGeometry? margin;
+
+  @override
+  State<StaticButton> createState() => _StaticButtonState();
+}
+
+class _StaticButtonState extends State<StaticButton> {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final baseColor = widget.buttonColor ?? Colors.blue;
+
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) => setState(() => _isPressed = false),
+      onTapCancel: () => setState(() => _isPressed = false),
+      onTap: widget.onTap,
+      child: AnimatedContainer(
+        margin: widget.margin,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        transform: Matrix4.identity()
+          ..scale(_isPressed ? 0.95 : 1.0), // الضغط يدي إحساس بالعمق
+        decoration: BoxDecoration(
+          color: _isPressed
+              ? baseColor.withOpacity(0.85) // أغمق شوية عند الضغط
+              : baseColor,
+          borderRadius: BorderRadius.circular(5),
+          boxShadow: _isPressed
+              ? []
+              : [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  )
+                ],
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: context.screenWidth * 0.07,
+          vertical: context.screenHeight * 0.018,
+        ),
+        child: Center(
+          child: AnimatedDefaultTextStyle(
+            duration: const Duration(milliseconds: 200),
+            style: widget.style ??
+                AppStyless.styleWhiteBold22.copyWith(
+                  color: _isPressed ? Colors.white70 : Colors.white,
+                ),
+            child: Text(
+              widget.text,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
